@@ -1,0 +1,39 @@
+.container {
+    padding: 20px;
+    width: 100%;
+    max-width: 1280px;
+    margin: auto;
+}
+
+.search {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.search label {
+    display: block;
+}
+
+.search button {
+    width: 110px;
+    height: 42px;
+    margin-left: 20px;
+    margin-top: auto;
+    flex-shrink: 0;
+}
+
+.search select {
+    width: 185px;
+}
+
+.search .code {
+    width: 140px;
+}
+
+.search .name {
+    width: 100%;
+    margin: 0 20px;
+}

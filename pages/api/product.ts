@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import dbConnect from '../../lib/dbConnect';
 import { Product } from '../../types/types';
 import jwt from 'jsonwebtoken';
+import apiErr from '../../utils/handleApiError';
 
 export default async function handler(
   req: NextApiRequest,
@@ -14,7 +15,7 @@ export default async function handler(
   try {
    jwt.verify(token, process.env.JWT_SECRET || 'heloo');
   } catch (err) {
-    return res.status(401).json({ error: 'Authentication error' });
+    return await apiErr(res, 401, 'Authentication error');
   }
 
   if (req.method === 'POST') await handlePost();
@@ -24,7 +25,7 @@ export default async function handler(
   async function handlePost() {
     const body = JSON.parse(req.body) as Product;
     if (!body.name || !body.code || !body.sellAt || !body.buyAt || !body.category || (!body.stock && body.stock !== 0)) 
-      return res.status(400).json({ error: 'Form not submitted properly - missing data' });
+    return await apiErr(res, 400, 'Form not submitted properly - missing data');
 
     const _id = body._id ? ObjectId.createFromHexString(body._id as string) : null;
     delete body._id;
@@ -33,11 +34,11 @@ export default async function handler(
     
     if (!_id) {
       const data = await db.collection('products').findOne({ code: body.code });
-      if (data) return res.status(404).json({ error: `Product with the code: "${body.code}" already exists` }); //@ts-ignore
+      if (data) return  await apiErr(res, 404, `Product with the code: "${body.code}" already exists`); //@ts-ignore
       product = await db.collection('products').insertOne(body);
     } else product = await db.collection('products').updateOne({ _id }, { $set: body });
 
-    if (!product) return res.status(500).json({ error: `Internal server error` });
+    if (!product) return await apiErr(res, 500, `Internal server error`);
 
     res.status(200).json(product);
   }
@@ -60,7 +61,7 @@ export default async function handler(
   async function handleDelete() {
     const _id = req.query._id as string;
     
-    if (!_id) return res.status(400).json({ error: `_id is a required argument` });
+    if (!_id) return await apiErr(res, 400, `_id is a required argument`);
 
     const data = await db.collection('products').deleteOne({ _id: ObjectId.createFromHexString(_id) });
 

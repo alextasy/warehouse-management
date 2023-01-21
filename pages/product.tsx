@@ -74,7 +74,7 @@ export default function Home() {
             </select>
           </div>
           
-          <button className='btn btn-primary mb-2' style={{ width: '100%' }}>Add product</button>
+          <button className='btn btn-primary mb-2' style={{ width: '100%' }}>{ id ? 'Edit product' : 'Add product' }</button>
           <Link href='/storage' className='btn btn-danger mb-2' style={{ width: '100%' }}>Cancel</Link>
           { accErr && <div className='text-danger'>{ accErr }</div> }
         </form>

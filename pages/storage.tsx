@@ -43,7 +43,7 @@ export default function Home() {
   async function deleteProduct(doDelete: boolean) {
     if (!doDelete) return setToBeDeleted({} as Product);
 
-    const data = await Fetch(`/api/product?_id=${toBeDeleted._id}`, null, 'DELETE');
+    const data = await Fetch(`/api/product?_id=${toBeDeleted._id}&token=${authContext.user.token}`, null, 'DELETE');
     if (data && data.deletedCount === 1) setResults(results.filter(result => result._id !== toBeDeleted._id));
     setToBeDeleted({} as Product);
   }

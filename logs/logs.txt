@@ -1,0 +1,7 @@
+// Error Logs:
+
+[1/21/2023, 11:25:26 PM] Username or Password missing
+[1/21/2023, 11:33:05 PM] User "alex05tm" doesn't exist
+[1/21/2023, 11:33:53 PM] User "alex05tm" doesn't exist
+[1/21/2023, 11:43:42 PM] Wrong password
+[1/21/2023, 11:44:38 PM] Authentication error

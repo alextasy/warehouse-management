@@ -3,23 +3,24 @@ import dbConnect from '../../lib/dbConnect';
 import bcrypt from 'bcrypt';
 import { User, ErrorRes } from '../../types/types';
 import jwt from 'jsonwebtoken';
+import apiErr from '../../utils/handleApiError';
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<User|ErrorRes>
 ) {
   const { username, password, email, phone } = JSON.parse(req.body) || {};
-  if (!username || !password || !email) return res.status(400).json({ error: 'Username, Password or email missing' });
+  if (!username || !password || !email) return await apiErr(res, 400, 'Username, Password or email missing');
   
   const db = await dbConnect();
   const existingUser = await db.collection('users').findOne({ $or: [ { username }, { email } ] });
-  if (existingUser) return res.status(400).json({ error: 'User already exists' });
+  if (existingUser) return await apiErr(res, 400, 'User already exists');
 
   const hashedPass = await bcrypt.hash(password, 10);
 
   const result = await db.collection('users').insertOne({ username, password: hashedPass, email, phone });
   
-  if (!result) return res.status(500).json({ error: 'Internal server error' });
+  if (!result) return await apiErr(res, 500, 'Internal server error');
   
   //@ts-ignore
   const user = (await db.collection('users').findOne({ _id: result.insertedId })) as User;

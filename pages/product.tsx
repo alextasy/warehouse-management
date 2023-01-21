@@ -1,8 +1,9 @@
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useContext, useEffect, useState } from 'react';
 import Fetch from '../utils/fetch';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { Product, ProductCategory } from '../types/types';
+import { AuthContext } from '../context/AuthContext';
 
 export default function Home() {
   const [values, setValues] = useState({ code: '', name: '', description: '', buyAt: '', sellAt: '', stock: 0, category: 'Food goods'} as Product);
@@ -11,21 +12,24 @@ export default function Home() {
   const router = useRouter();
   const id = router.query.id as string;
 
+  const authContext = useContext(AuthContext);
+
   useEffect(()=> {
     async function getProduct() {
+      if (!authContext.appHasLoaded) return;
       if (!id) return setLoading(false);
 
-      const product = await Fetch(`api/product?_id=${id}`).catch(()=>{});
+      const product = await Fetch(`api/product?_id=${id}&token=${authContext.user.token}`).catch(()=>{});
       if (product && product._id) setValues(product);
       setLoading(false);
     }
     getProduct();
-  }, []);
+  }, [ authContext.appHasLoaded ]);
 
   async function submit(e: FormEvent) {
     e.preventDefault(); // @ts-ignore 
     try {
-      await Fetch('api/product', {...values, _id: id});
+      await Fetch(`api/product?token=${authContext.user.token}`, {...values, _id: id});
       router.push('/storage');
     } catch (err: any) {
       setAccErr(err.message);

@@ -1,0 +1,22 @@
+.header {
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #dee2e6;
+    padding: 0 20px;
+}
+
+.header b {
+    font-size: 22px;
+}
+
+.header b span {
+    color: var(--bs-blue);       
+}
+
+.info {
+    font-size: 13px;
+    color: gray;
+    text-align: right;
+}

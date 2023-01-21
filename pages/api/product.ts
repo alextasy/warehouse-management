@@ -2,12 +2,20 @@ import { ObjectId } from 'mongodb';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import dbConnect from '../../lib/dbConnect';
 import { Product } from '../../types/types';
+import jwt from 'jsonwebtoken';
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<any>
 ) {
   const db = await dbConnect();
+  const token = req.query.token as string;
+
+  try {
+   jwt.verify(token, process.env.JWT_SECRET || 'heloo');
+  } catch (err) {
+    return res.status(401).json({ error: 'Authentication error' });
+  }
 
   if (req.method === 'POST') await handlePost();
   else if (req.method === 'GET') await handleGet();
@@ -36,6 +44,7 @@ export default async function handler(
 
   async function handleGet() {
     const query = {...req.query} as any;
+    delete query.token;
     if (query.name) query.name = { $regex: query.name, $options: 'i' };
 
     let data = null;

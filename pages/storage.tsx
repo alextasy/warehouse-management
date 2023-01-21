@@ -1,29 +1,33 @@
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import styles from '../styles/storage.module.css';
 import { useRouter } from 'next/router';
 import Fetch from '../utils/fetch';
 import { Product } from '../types/types';
+import { AuthContext } from '../context/AuthContext';
 
 export default function Home() {
   const [input, setInput] = useState({ code: '', name: '', category: 'All' });
   const [results, setResults] = useState([] as Product[]);
   const router = useRouter();
   const [toBeDeleted, setToBeDeleted] = useState({} as Product);
+  const authContext = useContext(AuthContext);
 
   async function search() {
     const params = new URLSearchParams();
+    params.append('token', authContext.user.token || '');
     if (input.code) params.append('code', input.code);
     else {
       if (input.name) params.append('name', input.name);
       if (input.category !== 'All') params.append('category', input.category);
     }
 
-    const products = await Fetch(`api/product?` + params).catch(()=>{});
+    const products = await Fetch(`api/product?` + params).catch((err)=>{console.log(err.message);
+    });
     if (products) setResults(products);
   }
 
-  useEffect(()=> { search(); }, []);
+  useEffect(()=> { if (authContext.appHasLoaded) search(); }, [ authContext.appHasLoaded ]);
 
   function editProduct(id: string) {
     router.push(`/product?id=${id}`);

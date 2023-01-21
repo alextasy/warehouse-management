@@ -1,11 +1,13 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { FormEvent, useState } from 'react';
+import { FormEvent, useContext, useState } from 'react';
+import { AuthContext } from '../context/AuthContext';
 import Fetch from '../utils/fetch';
 
 export default function Register() {
   const [accErr, setAccErr] = useState('');
   const router = useRouter();
+  const authContext = useContext(AuthContext);
 
   async function register(e: FormEvent) {
     e.preventDefault(); // @ts-ignore 
@@ -16,6 +18,7 @@ export default function Register() {
     
     const acc = await Fetch('api/register', { username, password, email, phone }).catch(err => setAccErr(err.message));
     if (!acc) return;  
+    authContext.dispatch({ type: 'login', payload: acc });
     router.push('/storage');
   }
 

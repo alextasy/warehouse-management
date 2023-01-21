@@ -1,10 +1,16 @@
 import { ObjectId } from "mongodb";
 
-export type account = {
+export type ErrorRes = {
+    error: string
+}
+
+export type User = {
+    _id?: string;
     username: string,
     password?: string,
     email: string,
-    phoneNumber?: string,
+    phone?: string,
+    token?: string
 }
 
 export type ProductCategory = 'Food goods' | 'Building materials' | 'Chancery materials';
